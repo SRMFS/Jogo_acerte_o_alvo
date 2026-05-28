@@ -1,0 +1,461 @@
+<canvas width="1200" height="800"></canvas>
+
+<script>
+
+    var tela = document.querySelector('canvas');
+
+    var pincel = tela.getContext('2d');
+
+    var largura = 1200;
+    var altura = 800;
+
+    var raio = 28;
+
+    var xAleatorio;
+    var yAleatorio;
+
+    var pontos = 0;
+    var tiros = 20;
+
+    var velocidade = 1000;
+
+    var intervalo;
+
+    // =====================================
+    // IMAGEM FUNDO
+    // =====================================
+
+    var fundo = new Image();
+
+    // coloque o nome da imagem aqui
+    fundo.src = "faroeste.png";
+
+    // =====================================
+    // TEXTO
+    // =====================================
+
+    function desenhaTexto(texto, x, y, tamanho = 30){
+
+        pincel.font = tamanho + "px Arial";
+
+        pincel.fillStyle = "white";
+
+        pincel.lineWidth = 4;
+
+        pincel.strokeStyle = "black";
+
+        pincel.strokeText(texto, x, y);
+
+        pincel.fillText(texto, x, y);
+    }
+
+    // =====================================
+    // CÍRCULO
+    // =====================================
+
+    function desenhaCirculo(x, y, raio, cor){
+
+        pincel.fillStyle = cor;
+
+        pincel.beginPath();
+
+        pincel.arc(
+            x,
+            y,
+            raio,
+            0,
+            2 * Math.PI
+        );
+
+        pincel.fill();
+    }
+
+    // =====================================
+    // ALVO PENDURADO
+    // =====================================
+
+    function desenhaAlvo(x, y){
+
+        // corrente
+
+        pincel.strokeStyle = "#1a1a1a";
+
+        pincel.lineWidth = 5;
+
+        pincel.beginPath();
+
+        pincel.moveTo(x, y - 90);
+
+        pincel.lineTo(x, y - 40);
+
+        pincel.stroke();
+
+        // placa madeira
+
+        pincel.fillStyle = "#7a4a21";
+
+        pincel.fillRect(
+            x - 45,
+            y - 45,
+            90,
+            90
+        );
+
+        // borda madeira
+
+        pincel.strokeStyle = "#3d220f";
+
+        pincel.lineWidth = 4;
+
+        pincel.strokeRect(
+            x - 45,
+            y - 45,
+            90,
+            90
+        );
+
+        // linhas madeira
+
+        pincel.strokeStyle = "#5a3417";
+
+        pincel.lineWidth = 2;
+
+        for(var i = 0; i < tiros; i++){
+
+            // ponta da bala
+            pincel.fillStyle = "#d4af37";
+
+            pincel.beginPath();
+
+            pincel.arc(
+                140 + (i * 28),
+                205,
+                7,
+                Math.PI,
+                0
+            );
+
+            pincel.fill();
+
+            // corpo da bala
+            pincel.fillStyle = "#c68642";
+
+            pincel.fillRect(
+                133 + (i * 28),
+                205,
+                14,
+                18
+            );
+
+            // borda
+            pincel.strokeStyle = "#5a3a1a";
+
+            pincel.lineWidth = 2;
+
+            pincel.strokeRect(
+                133 + (i * 28),
+                205,
+                14,
+                18
+            );
+        }
+
+        // alvo pixelado
+
+        desenhaCirculo(
+            x,
+            y,
+            28,
+            "#b22222"
+        );
+
+        desenhaCirculo(
+            x,
+            y,
+            20,
+            "#f5deb3"
+        );
+
+        desenhaCirculo(
+            x,
+            y,
+            12,
+            "#b22222"
+        );
+
+        desenhaCirculo(
+            x,
+            y,
+            5,
+            "#ffd700"
+        );
+    }
+
+    // =====================================
+    // HUD
+    // =====================================
+
+    function desenhaHUD(){
+
+        desenhaTexto(
+            "🔫 BANG BANG",
+            20,
+            50,
+            40
+        );
+
+        desenhaTexto(
+            "PONTOS: " + pontos,
+            20,
+            110
+        );
+
+        desenhaTexto(
+            "VELOCIDADE: " + velocidade + "ms",
+            20,
+            160
+        );
+
+        desenhaTexto(
+            "TIROS:",
+            20,
+            210
+        );
+
+        // munição
+
+        for(var i = 0; i < tiros; i++){
+
+            desenhaTexto(
+                "🔸",
+                130 + (i * 25),
+                210,
+                25
+            );
+        }
+    }
+
+    // =====================================
+    // LIMPA
+    // =====================================
+
+    function limpaTela(){
+
+        pincel.clearRect(
+            0,
+            0,
+            largura,
+            altura
+        );
+    }
+
+    // =====================================
+    // POSIÇÕES
+    // =====================================
+
+    function sorteaPosicaoX(){
+
+        return Math.floor(
+            Math.random() * 650
+        ) + 280;
+    }
+
+    function sorteaPosicaoY(){
+
+        return Math.floor(
+            Math.random() * 280
+        ) + 260;
+    }
+
+    // =====================================
+    // UPDATE
+    // =====================================
+
+    function atualizaTela(){
+
+        limpaTela();
+
+        // fundo
+
+        pincel.drawImage(
+            fundo,
+            0,
+            0,
+            largura,
+            altura
+        );
+
+        // alvo
+
+        xAleatorio = sorteaPosicaoX();
+
+        yAleatorio = sorteaPosicaoY();
+
+        desenhaAlvo(
+            xAleatorio,
+            yAleatorio
+        );
+
+        desenhaHUD();
+    }
+
+    // =====================================
+    // DIFICULDADE
+    // =====================================
+
+    function aumentaDificuldade(){
+
+        clearInterval(intervalo);
+
+        // aumenta dificuldade a cada 5 acertos
+
+        if(
+            pontos % 5 == 0
+            && velocidade > 250
+        ){
+
+            velocidade -= 150;
+        }
+
+        intervalo = setInterval(
+            atualizaTela,
+            velocidade
+        );
+    }
+
+    // =====================================
+    // INÍCIO
+    // =====================================
+
+    fundo.onload = function(){
+
+        intervalo = setInterval(
+            atualizaTela,
+            velocidade
+        );
+    }
+
+    // =====================================
+    // GAME OVER
+    // =====================================
+
+    function gameOver(){
+
+        clearInterval(intervalo);
+
+        limpaTela();
+
+        pincel.drawImage(
+            fundo,
+            0,
+            0,
+            largura,
+            altura
+        );
+
+        desenhaTexto(
+            "GAME OVER 💀",
+            380,
+            350,
+            80
+        );
+
+        desenhaTexto(
+            "PONTOS: " + pontos,
+            470,
+            440,
+            45
+        );
+    }
+
+    // =====================================
+    // VITÓRIA
+    // =====================================
+
+    function venceu(){
+
+        clearInterval(intervalo);
+
+        limpaTela();
+
+        pincel.drawImage(
+            fundo,
+            0,
+            0,
+            largura,
+            altura
+        );
+
+        desenhaTexto(
+            "BANG BANG 🔥",
+            320,
+            320,
+            90
+        );
+
+        desenhaTexto(
+            "VOCÊ ACERTOU TODOS OS TIROS!",
+            170,
+            430,
+            50
+        );
+    }
+
+    // =====================================
+    // TIRO
+    // =====================================
+
+    function dispara(evento){
+
+        if(tiros <= 0){
+
+            gameOver();
+
+            return;
+        }
+
+        tiros--;
+
+        var x = evento.pageX - tela.offsetLeft;
+
+        var y = evento.pageY - tela.offsetTop;
+
+        // acerto
+
+        if(
+            (x > xAleatorio - raio)
+            && (x < xAleatorio + raio)
+            && (y > yAleatorio - raio)
+            && (y < yAleatorio + raio)
+        ){
+
+            pontos++;
+
+            aumentaDificuldade();
+        }
+
+        atualizaTela();
+
+        // vitória perfeita
+
+        if(
+            pontos == 20
+            && tiros == 0
+        ){
+
+            venceu();
+
+            return;
+        }
+
+        // derrota
+
+        if(tiros <= 0){
+
+            gameOver();
+        }
+    }
+
+    tela.onclick = dispara;
+
+</script>
