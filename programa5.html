@@ -2,19 +2,30 @@
 
 <script>
 
-    var tela = document.querySelector('canvas');
+    // =====================================
+    // CANVAS
+    // =====================================
 
-    var pincel = tela.getContext('2d');
+    var tela = document.querySelector("canvas");
+
+    var pincel = tela.getContext("2d");
 
     var largura = 1200;
+
     var altura = 800;
+
+    // =====================================
+    // GAME
+    // =====================================
 
     var raio = 28;
 
     var xAleatorio;
+
     var yAleatorio;
 
     var pontos = 0;
+
     var tiros = 20;
 
     var velocidade = 1000;
@@ -22,12 +33,11 @@
     var intervalo;
 
     // =====================================
-    // IMAGEM FUNDO
+    // FUNDO
     // =====================================
 
     var fundo = new Image();
 
-    // coloque o nome da imagem aqui
     fundo.src = "faroeste.png";
 
     // =====================================
@@ -40,9 +50,9 @@
 
         pincel.fillStyle = "white";
 
-        pincel.lineWidth = 4;
-
         pincel.strokeStyle = "black";
+
+        pincel.lineWidth = 5;
 
         pincel.strokeText(texto, x, y);
 
@@ -50,7 +60,7 @@
     }
 
     // =====================================
-    // CÍRCULO
+    // CIRCULO
     // =====================================
 
     function desenhaCirculo(x, y, raio, cor){
@@ -78,15 +88,15 @@
 
         // corrente
 
-        pincel.strokeStyle = "#1a1a1a";
+        pincel.strokeStyle = "#222";
 
-        pincel.lineWidth = 5;
+        pincel.lineWidth = 6;
 
         pincel.beginPath();
 
-        pincel.moveTo(x, y - 90);
+        pincel.moveTo(x, y - 100);
 
-        pincel.lineTo(x, y - 40);
+        pincel.lineTo(x, y - 45);
 
         pincel.stroke();
 
@@ -95,10 +105,10 @@
         pincel.fillStyle = "#7a4a21";
 
         pincel.fillRect(
-            x - 45,
-            y - 45,
-            90,
-            90
+            x - 50,
+            y - 50,
+            100,
+            100
         );
 
         // borda madeira
@@ -108,10 +118,10 @@
         pincel.lineWidth = 4;
 
         pincel.strokeRect(
-            x - 45,
-            y - 45,
-            90,
-            90
+            x - 50,
+            y - 50,
+            100,
+            100
         );
 
         // linhas madeira
@@ -120,74 +130,129 @@
 
         pincel.lineWidth = 2;
 
-        for(var i = 0; i < tiros; i++){
-
-            // ponta da bala
-            pincel.fillStyle = "#d4af37";
+        for(var i = 0; i < 5; i++){
 
             pincel.beginPath();
 
-            pincel.arc(
-                140 + (i * 28),
-                205,
-                7,
-                Math.PI,
-                0
+            pincel.moveTo(
+                x - 50,
+                y - 40 + (i * 20)
             );
 
-            pincel.fill();
-
-            // corpo da bala
-            pincel.fillStyle = "#c68642";
-
-            pincel.fillRect(
-                133 + (i * 28),
-                205,
-                14,
-                18
+            pincel.lineTo(
+                x + 50,
+                y - 40 + (i * 20)
             );
 
-            // borda
-            pincel.strokeStyle = "#5a3a1a";
-
-            pincel.lineWidth = 2;
-
-            pincel.strokeRect(
-                133 + (i * 28),
-                205,
-                14,
-                18
-            );
+            pincel.stroke();
         }
 
-        // alvo pixelado
+        // alvo
 
         desenhaCirculo(
             x,
             y,
-            28,
+            30,
             "#b22222"
         );
 
         desenhaCirculo(
             x,
             y,
-            20,
+            22,
             "#f5deb3"
         );
 
         desenhaCirculo(
             x,
             y,
-            12,
+            14,
             "#b22222"
         );
 
         desenhaCirculo(
             x,
             y,
-            5,
+            6,
             "#ffd700"
+        );
+    }
+
+    // =====================================
+    // BALA BONITA
+    // =====================================
+
+    function desenhaBala(x, y){
+
+        // sombra
+
+        pincel.fillStyle = "rgba(0,0,0,0.25)";
+
+        pincel.fillRect(
+            x + 2,
+            y + 2,
+            18,
+            32
+        );
+
+        // ponta dourada
+
+        pincel.fillStyle = "#f4d03f";
+
+        pincel.beginPath();
+
+        pincel.moveTo(x + 9, y);
+
+        pincel.lineTo(x + 18, y + 12);
+
+        pincel.lineTo(x, y + 12);
+
+        pincel.fill();
+
+        // corpo cobre
+
+        pincel.fillStyle = "#b87333";
+
+        pincel.fillRect(
+            x,
+            y + 12,
+            18,
+            20
+        );
+
+        // detalhe inferior
+
+        pincel.fillStyle = "#8b5a2b";
+
+        pincel.fillRect(
+            x,
+            y + 26,
+            18,
+            6
+        );
+
+        // brilho
+
+        pincel.fillStyle = "rgba(255,255,255,0.35)";
+
+        pincel.fillRect(
+            x + 3,
+            y + 14,
+            3,
+            10
+        );
+
+        // borda
+
+        pincel.strokeStyle = "#3d220f";
+
+        pincel.lineWidth = 2;
+
+        pincel.strokeRect(
+            x,
+            y + 12,
+            18,
+            20
         );
     }
 
@@ -217,20 +282,18 @@
         );
 
         desenhaTexto(
-            "TIROS:",
+            "MUNIÇÃO:",
             20,
-            210
+            220
         );
 
-        // munição
+        // balas
 
         for(var i = 0; i < tiros; i++){
 
-            desenhaTexto(
-                "🔸",
-                130 + (i * 25),
-                210,
-                25
+            desenhaBala(
+                170 + (i * 28),
+                190
             );
         }
     }
@@ -296,6 +359,8 @@
             yAleatorio
         );
 
+        // hud
+
         desenhaHUD();
     }
 
@@ -307,8 +372,6 @@
 
         clearInterval(intervalo);
 
-        // aumenta dificuldade a cada 5 acertos
-
         if(
             pontos % 5 == 0
             && velocidade > 250
@@ -316,18 +379,6 @@
 
             velocidade -= 150;
         }
-
-        intervalo = setInterval(
-            atualizaTela,
-            velocidade
-        );
-    }
-
-    // =====================================
-    // INÍCIO
-    // =====================================
-
-    fundo.onload = function(){
 
         intervalo = setInterval(
             atualizaTela,
@@ -355,15 +406,15 @@
 
         desenhaTexto(
             "GAME OVER 💀",
-            380,
+            360,
             350,
             80
         );
 
         desenhaTexto(
             "PONTOS: " + pontos,
-            470,
-            440,
+            450,
+            430,
             45
         );
     }
@@ -388,14 +439,14 @@
 
         desenhaTexto(
             "BANG BANG 🔥",
-            320,
+            300,
             320,
             90
         );
 
         desenhaTexto(
             "VOCÊ ACERTOU TODOS OS TIROS!",
-            170,
+            150,
             430,
             50
         );
@@ -420,7 +471,7 @@
 
         var y = evento.pageY - tela.offsetTop;
 
-        // acerto
+        // acertou
 
         if(
             (x > xAleatorio - raio)
@@ -454,6 +505,18 @@
 
             gameOver();
         }
+    }
+
+    // =====================================
+    // START
+    // =====================================
+
+    fundo.onload = function(){
+
+        intervalo = setInterval(
+            atualizaTela,
+            velocidade
+        );
     }
 
     tela.onclick = dispara;
